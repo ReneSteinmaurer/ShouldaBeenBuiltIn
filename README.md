@@ -27,7 +27,7 @@ We're working on building reputation with Windows SmartScreen to reduce these wa
 
 ## Installation
 
-Download the latest release from the [Releases](https://github.com/yourusername/ShouldaBeenBuiltIn/releases) page.
+Download the latest release from the [Releases](https://github.com/ReneSteinmaurer/ShouldaBeenBuiltIn/releases) page.
 
 ## Development
 
