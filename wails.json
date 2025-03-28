@@ -1,0 +1,13 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "win_tools",
+  "outputfilename": "win_tools",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Rene Steinmaurer",
+    "email": "55176260+ReneSteinmaurer@users.noreply.github.com"
+  }
+}

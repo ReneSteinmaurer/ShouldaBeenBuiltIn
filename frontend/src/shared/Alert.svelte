@@ -1,0 +1,59 @@
+<script>
+  import { faCheck, faInfo, faExclamationTriangle, faXmark  } from '@fortawesome/free-solid-svg-icons';
+  import Icon from './Icon.svelte';
+
+  const { duration = 3000 } = $props();
+  let visible = $state(false);
+  let message = $state("");
+  let type = $state("info");
+  let timeoutId = null
+  let alertTypeClass = $derived.by(() => {
+    console.log(type);
+    switch (type) {
+      case 'info':
+        return "alert-info";
+      case 'success':
+        return "alert-success";
+      case 'warning':
+        return "alert-warning";
+      case 'error':
+        return "alert-error";
+      default:
+        return "alert-info";
+    }
+  });
+  let alertIcon = $derived.by(() => {
+    console.log(type);
+    switch(type) {
+      case 'info': return faInfo;
+      case 'success': return faCheck;
+      case 'warning': return faExclamationTriangle;
+      case 'error': return faXmark;
+      default: return faInfo;
+    }
+  });
+
+  export function showToast(toastMessage, toastType = 'info') {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId)
+      timeoutId = null
+    }
+    visible = true;
+    message = toastMessage
+    type = toastType
+    timeoutId = setTimeout(() => {
+      visible = false;
+      timeoutId = null;
+    }, duration);
+  }
+  
+</script>
+
+{#if visible}
+  <div class="toast">
+    <div class={`alert ${alertTypeClass}`}>
+      <Icon icon_definition="{alertIcon}"/>
+      <span>{message}</span>
+    </div>
+  </div>
+{/if}
