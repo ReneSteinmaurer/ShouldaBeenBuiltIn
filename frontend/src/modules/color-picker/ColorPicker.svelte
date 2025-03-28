@@ -2,6 +2,7 @@
   import { faEyeDropper } from '@fortawesome/free-solid-svg-icons';
   import Icon from '../../shared/Icon.svelte';
   import Alert from '../../shared/Alert.svelte';
+  import { ClipboardSetText } from '../../../wailsjs/runtime/runtime.js';
 
   let colorCode = $state('#ffffff');
   const colorCodeHistory = $state([]);
@@ -18,8 +19,12 @@
   }
 
   function copyColorCodeToClipboardAndDisplayToast(colorCode) {
-    navigator.clipboard.writeText(colorCode);
-    toastRef.showToast(`Farbcode '${colorCode}' in die Zwischenablage kopiert!`, 'success');
+    const ok = ClipboardSetText(colorCode)
+    if (!ok) {
+      toastRef.showToast(`An unexpected error occurred while saving to clipboard`, 'error');
+      return
+    }
+    toastRef.showToast(`Color code '${colorCode}' was copied to clipboard!`, 'success');
   }
 
 </script>
