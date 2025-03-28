@@ -28,3 +28,5 @@ jobs:
         with:
           files: ./build/bin/*.exe
           generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
