@@ -1,5 +1,5 @@
 <script>
-  import { CaptureArea } from '../../../wailsjs/go/main/App.js';
+  import {CaptureArea} from '../../../wailsjs/go/api/App.js';
   import Alert from '../../shared/Alert.svelte';
   import Icon from '../../shared/Icon.svelte';
   import { faImages } from '@fortawesome/free-solid-svg-icons';
