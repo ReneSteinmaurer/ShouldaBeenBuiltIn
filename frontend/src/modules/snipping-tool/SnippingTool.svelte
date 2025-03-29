@@ -7,7 +7,7 @@
   } from '../../../wailsjs/go/api/App.js';
   import Alert from '../../shared/Alert.svelte';
   import Icon from '../../shared/Icon.svelte';
-  import { faImages } from '@fortawesome/free-solid-svg-icons';
+  import { faExclamationTriangle, faImages, faInfoCircle, faScissors } from '@fortawesome/free-solid-svg-icons';
   import {
     WindowHide,
     WindowMaximise,
@@ -17,20 +17,20 @@
   } from '../../../wailsjs/runtime/runtime.js';
 
   let images = $state([]);
-  let loading = $state(false);
+  let screenshotsLoading = $state(false);
   let toastRef
 
   async function handleScreenshotAllScreens() {
     WindowMinimise()
-    loading = true;
+    screenshotsLoading = true;
     const imagesRes = await CaptureArea();
     WindowUnminimise()
-    loading = false
+    screenshotsLoading = false
     images = imagesRes;
     toastRef.showToast('Screenshots were taken', 'success');
   }
 
-  async function handleScreenshot() {
+  async function handleSnippingTool() {
     MaximizeWindowToBounds()
     MakeWindowTransparent()
     setTimeout(() => {
@@ -59,15 +59,27 @@
 <div>
   <div class="flex justify-center items-center">
     <button onclick={handleScreenshotAllScreens} class="btn gap-2 btn-primary btn-md">
-      {#if loading}
+      {#if screenshotsLoading}
         <span class="loading loading-spinner"></span>
         Taking Screenshots...
         {:else}
         <Icon icon_definition={faImages} />
-        Screenshot All Screens
+        Take Screenshot
       {/if}
     </button>
   </div>
+  <div class="text-center mt-2 text-sm text-base-content/70 flex items-center justify-center gap-2">
+    <Icon icon_definition={faInfoCircle} />
+    <span>The window will be closed during this operation</span>
+  </div>
+
+  <div class="flex justify-center items-center mt-8">
+    <button onclick={handleSnippingTool} class="btn gap-2 btn-primary btn-md">
+        <Icon icon_definition={faScissors} />
+        Snipping Tool
+    </button>
+  </div>
+
   {#if images.length > 0}
     <div class="grid mt-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {#each images as image, i}
@@ -89,7 +101,7 @@
         </div>
       {/each}
     </div>
-  {:else if !loading}
+  {:else if !screenshotsLoading}
     <div class="text-center py-12 text-base-content/70">
       <p>No screenshots available. Click on "Take Screenshot" to get started.</p>
     </div>

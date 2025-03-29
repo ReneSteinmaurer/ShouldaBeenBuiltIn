@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/lxn/win"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"syscall"
@@ -27,10 +28,10 @@ func (a *App) MakeWindowTransparent() {
 	}
 }
 
-func (a *App) UndoMakeWindowTransparent() {
+func (a *App) UndoMakeWindowTransparent() error {
 	hwnd := win.FindWindow(nil, syscall.StringToUTF16Ptr(a.appOptions.Title))
 	if hwnd == 0 {
-		return
+		return fmt.Errorf("the window handler could not be found")
 	}
 
 	exStyle := win.GetWindowLong(hwnd, win.GWL_EXSTYLE)
@@ -51,6 +52,7 @@ func (a *App) UndoMakeWindowTransparent() {
 		0,
 		uintptr(0x0001|0x0002|0x0400|0x0008),
 	)
+	return nil
 }
 
 func (a *App) MaximizeWindowToBounds() {
