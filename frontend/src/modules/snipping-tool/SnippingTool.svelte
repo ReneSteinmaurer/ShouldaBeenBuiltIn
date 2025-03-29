@@ -1,26 +1,21 @@
 <script>
   import {
-    CaptureArea, CaptureSnippet,
+    CaptureArea,
+    CaptureSnippet,
     MakeWindowTransparent,
-    MaximizeWindowToBounds, ResetWindowSizeToDefault,
+    MaximizeWindowToBounds,
+    ResetWindowSizeToDefault,
     UndoMakeWindowTransparent,
   } from '../../../wailsjs/go/api/App.js';
   import Alert from '../../shared/Alert.svelte';
   import Icon from '../../shared/Icon.svelte';
-  import { faExclamationTriangle, faImages, faInfoCircle, faScissors } from '@fortawesome/free-solid-svg-icons';
-  import {
-    WindowHide,
-    WindowMaximise,
-    WindowMinimise,
-    WindowShow,
-    WindowUnminimise,
-  } from '../../../wailsjs/runtime/runtime.js';
+  import { faImages, faInfoCircle, faScissors } from '@fortawesome/free-solid-svg-icons';
+  import { WindowMinimise, WindowUnminimise } from '../../../wailsjs/runtime/runtime.js';
   import SnippSelectionCanvas from './SnippSelectionCanvas.svelte';
 
   let images = $state([]);
   let screenshotsLoading = $state(false);
   let showSnippingSelection = $state(false);
-  let selectionHappened = $state(false);
   let toastRef;
 
   async function handleScreenshotAllScreens() {
@@ -33,8 +28,7 @@
     toastRef.showToast('Screenshots were taken', 'success');
   }
 
-  async function handleSnippingTool() {
-    selectionHappened = false;
+  function handleSnippingTool() {
     showSnippingSelection = true;
     MaximizeWindowToBounds();
     MakeWindowTransparent();
@@ -56,29 +50,18 @@
     window.open(blobUrl);
   }
 
-  function saveSnippingSelection() {
-
-  }
-
-  function cancelSnippingSelection() {
-
-  }
-
   async function handleSelectionEnd(selectionBox) {
     try {
       await UndoMakeWindowTransparent();
       await ResetWindowSizeToDefault();
-      selectionHappened = true;
       showSnippingSelection = false;
 
       if (!selectionBox) {
         toastRef.showToast(`Selection box could not be retrieved!`, 'error');
         return;
       }
-      toastRef.showToast(`Snippet was created successfully`, 'success');
-      console.log('selection box', selectionBox);
       const image = await CaptureSnippet(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
-      images = []
+      toastRef.showToast(`Snippet was created successfully`, 'success');
       images.push(image)
     } catch (e) {
       toastRef.showToast(`unexpected error: ${e.message || "Failed to process screenshot"}`, 'error');
@@ -112,14 +95,8 @@
   </div>
 
   {#if showSnippingSelection}
-    <div class="fixed inset-0 z-50 bg-opacity-100">
+    <div class="fixed inset-0 z-50 bg-black bg-opacity-50">
       <SnippSelectionCanvas onSelectionEnd={handleSelectionEnd} />
-    </div>
-  {/if}
-  {#if selectionHappened}
-    <div class="flex justify-center items-center mt-8">
-      <button onclick={saveSnippingSelection} class="btn btn-success mr-2">Auswahl bestätigen</button>
-      <button onclick={cancelSnippingSelection} class="btn btn-error">Abbrechen</button>
     </div>
   {/if}
 
