@@ -8,7 +8,7 @@ import (
 
 func (a *App) MakeWindowTransparent() {
 	if a.hwnd == 0 {
-		a.hwnd = win.FindWindow(nil, syscall.StringToUTF16Ptr("ShouldaBeenBuiltIn"))
+		a.hwnd = win.FindWindow(nil, syscall.StringToUTF16Ptr(a.appOptions.Title))
 	}
 
 	if a.hwnd != 0 {
@@ -28,7 +28,7 @@ func (a *App) MakeWindowTransparent() {
 }
 
 func (a *App) UndoMakeWindowTransparent() {
-	hwnd := win.FindWindow(nil, syscall.StringToUTF16Ptr("ShouldaBeenBuiltIn"))
+	hwnd := win.FindWindow(nil, syscall.StringToUTF16Ptr(a.appOptions.Title))
 	if hwnd == 0 {
 		return
 	}
