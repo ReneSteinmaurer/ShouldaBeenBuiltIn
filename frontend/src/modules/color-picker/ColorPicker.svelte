@@ -7,6 +7,7 @@
   let colorCode = $state('#ffffff');
   const colorCodeHistory = $state([]);
   let colorInputRef;
+  /** @type {import('../../shared/Alert.svelte').default} */
   let toastRef;
 
   function toggleColorPicker() {

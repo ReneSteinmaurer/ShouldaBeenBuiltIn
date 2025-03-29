@@ -8,7 +8,6 @@
   let type = $state("info");
   let timeoutId = null
   let alertTypeClass = $derived.by(() => {
-    console.log(type);
     switch (type) {
       case 'info':
         return "alert-info";
@@ -23,7 +22,6 @@
     }
   });
   let alertIcon = $derived.by(() => {
-    console.log(type);
     switch(type) {
       case 'info': return faInfo;
       case 'success': return faCheck;
@@ -33,6 +31,14 @@
     }
   });
 
+  /**
+   * Displays a toast notification and automatically hides it after a set time.
+   * If a toast is already visible, it will be reset.
+   *
+   * @param {string} toastMessage - The message to display in the toast
+   * @param {string} [toastType='info'] - The type of toast, affects styling
+   *                                     (possible values: 'info', 'success', 'warning', 'error')
+   */
   export function showToast(toastMessage, toastType = 'info') {
     if (timeoutId !== null) {
       clearTimeout(timeoutId)

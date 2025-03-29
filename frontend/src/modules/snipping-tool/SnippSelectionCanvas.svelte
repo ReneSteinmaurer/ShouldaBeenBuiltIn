@@ -2,6 +2,16 @@
   import { onMount } from 'svelte';
   import { GetWindowSize } from '../../../wailsjs/go/api/App.js';
 
+  /**
+   * @callback SelectionEndCallback
+   * @param {SelectionBox} selectionBox - The final coordinates and dimensions of the user's selection
+   * @returns {void}
+   */
+
+  /**
+   * Component props
+   * @type {{onSelectionEnd: SelectionEndCallback}}
+   */
   const {
     onSelectionEnd = () => {},
   } = $props();
@@ -11,6 +21,10 @@
   let isSelecting = $state(false);
   let startX = $state(0);
   let startY = $state(0);
+  /**
+   * Object representing the current selection coordinates and dimensions
+   * @type {SelectionBox}
+   */
   let selectionBox = { x: 0, y: 0, width: 0, height: 0 };
 
   onMount(async() => {

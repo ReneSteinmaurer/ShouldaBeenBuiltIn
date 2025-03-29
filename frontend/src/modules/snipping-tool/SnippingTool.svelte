@@ -16,6 +16,7 @@
   let images = $state([]);
   let screenshotsLoading = $state(false);
   let showSnippingSelection = $state(false);
+  /** @type {import('../../shared/Alert.svelte').default} */
   let toastRef;
 
   async function handleScreenshotAllScreens() {
@@ -50,6 +51,10 @@
     window.open(blobUrl);
   }
 
+  /**
+   * @async
+   * @param {SelectionBox} selectionBox - The coordinates and dimensions of the user's selection
+   */
   async function handleSelectionEnd(selectionBox) {
     try {
       await UndoMakeWindowTransparent();
