@@ -61,7 +61,7 @@ func (a *App) UndoMakeWindowTransparent() error {
 }
 
 func (a *App) MaximizeWindowToBounds() {
-	coordinates := a.GetMaximizedWindowCoordinates()
+	coordinates := a.sysInfo.WindowCoordinates
 	runtime.WindowSetSize(a.ctx, coordinates.TotalWidth, coordinates.TotalHeight)
 	runtime.WindowSetPosition(a.ctx, coordinates.MinX, coordinates.MinY)
 	runtime.WindowSetAlwaysOnTop(a.ctx, true)
@@ -71,11 +71,4 @@ func (a *App) ResetWindowSizeToDefault() {
 	runtime.WindowSetSize(a.ctx, a.appOptions.Width, a.appOptions.Height)
 	runtime.WindowCenter(a.ctx)
 	runtime.WindowSetAlwaysOnTop(a.ctx, false)
-}
-
-func (a *App) GetWindowSize() WindowSize {
-	return WindowSize{
-		Height: a.appOptions.Height,
-		Width:  a.appOptions.Width,
-	}
 }

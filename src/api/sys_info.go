@@ -1,9 +1,12 @@
 package api
 
 import (
-	"fmt"
 	"github.com/kbinani/screenshot"
 )
+
+type SysInfo struct {
+	WindowCoordinates *WindowCoordinates
+}
 
 type WindowCoordinates struct {
 	TotalWidth  int
@@ -12,7 +15,20 @@ type WindowCoordinates struct {
 	MinY        int
 }
 
-func (a *App) GetMaximizedWindowCoordinates() *WindowCoordinates {
+func NewWindowCoordinates() *WindowCoordinates {
+	w := &WindowCoordinates{}
+	w.CalcMaximizedWindowCoordinates()
+	return w
+}
+
+func NewSysInfo() *SysInfo {
+	s := &SysInfo{
+		WindowCoordinates: NewWindowCoordinates(),
+	}
+	return s
+}
+
+func (w *WindowCoordinates) CalcMaximizedWindowCoordinates() {
 	n := screenshot.NumActiveDisplays()
 	var minX, minY, maxX, maxY int
 
@@ -40,15 +56,8 @@ func (a *App) GetMaximizedWindowCoordinates() *WindowCoordinates {
 		}
 	}
 
-	totalWidth := maxX - minX
-	totalHeight := maxY - minY
-
-	fmt.Printf("Virtuelles Display: Min(%d,%d) Max(%d,%d) - Größe: %dx%d\n",
-		minX, minY, maxX, maxY, totalWidth, totalHeight)
-	return &WindowCoordinates{
-		TotalWidth:  totalWidth,
-		TotalHeight: totalHeight,
-		MinX:        minX,
-		MinY:        minY,
-	}
+	w.TotalWidth = maxX - minX
+	w.TotalHeight = maxY - minY
+	w.MinX = minX
+	w.MinY = minY
 }

@@ -16,7 +16,8 @@
   onMount(async() => {
     canvas = document.getElementById('selection-canvas');
     ctx = canvas.getContext('2d');
-    resizeCanvas(9600, 2160);
+    const windowSize = await GetWindowSize()
+    resizeCanvas(windowSize.width, windowSize.height);
   });
 
   function resizeCanvas(width, height) {

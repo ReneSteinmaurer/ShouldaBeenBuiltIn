@@ -14,49 +14,14 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-type BoundsOfActiveDisplays struct {
-	MinX, MinY, MaxX, MaxY int
-	TotalWidth             int
-	TotalHeight            int
-	NumberOfDisplays       int
+type Screenshot struct {
 }
 
-func NewBoundsOfActiveDisplays() *BoundsOfActiveDisplays {
-	bounds := &BoundsOfActiveDisplays{}
-	bounds.Calc()
-	return bounds
+func NewScreenshot() *Screenshot {
+	return &Screenshot{}
 }
 
-func (b *BoundsOfActiveDisplays) Calc() {
-	n := screenshot.NumActiveDisplays()
-	var minX, minY, maxX, maxY int
-
-	for i := 0; i < n; i++ {
-		bounds := screenshot.GetDisplayBounds(i)
-		if i == 0 || bounds.Min.X < minX {
-			minX = bounds.Min.X
-		}
-		if i == 0 || bounds.Min.Y < minY {
-			minY = bounds.Min.Y
-		}
-		if i == 0 || bounds.Max.X > maxX {
-			maxX = bounds.Max.X
-		}
-		if i == 0 || bounds.Max.Y > maxY {
-			maxY = bounds.Max.Y
-		}
-	}
-
-	b.TotalWidth = maxX - minX
-	b.TotalHeight = maxY - minY
-	b.MinX = minX
-	b.MaxX = maxX
-	b.MinY = minY
-	b.MaxY = maxY
-	b.NumberOfDisplays = n
-}
-
-func (a *App) CaptureArea() ([]string, error) {
+func (a *Screenshot) CaptureArea() ([]string, error) {
 	n := screenshot.NumActiveDisplays()
 	var base64Images []string
 
@@ -81,7 +46,7 @@ func (a *App) CaptureArea() ([]string, error) {
 	return base64Images, nil
 }
 
-func (a *App) ScreenshotEveryDisplayAndMergeIt(numberOfDisplays, minX, minY, totalWidth, totalHeight int) (*image.RGBA, error) {
+func (a *Screenshot) ScreenshotEveryDisplayAndMergeIt(numberOfDisplays, minX, minY, totalWidth, totalHeight int) (*image.RGBA, error) {
 	var fullImage *image.RGBA
 	fullImage = image.NewRGBA(image.Rect(0, 0, totalWidth, totalHeight))
 	for i := 0; i < numberOfDisplays; i++ {
@@ -98,7 +63,7 @@ func (a *App) ScreenshotEveryDisplayAndMergeIt(numberOfDisplays, minX, minY, tot
 	return fullImage, nil
 }
 
-func (a *App) CropSectionFromImage(inputImg *image.RGBA, x, y, width, height float32, totalWidth, totalHeight int) *image.Image {
+func (a *Screenshot) CropSectionFromImage(inputImg *image.RGBA, x, y, width, height float32, totalWidth, totalHeight int) image.Image {
 	relX := int(x)
 	relY := int(y)
 
@@ -116,13 +81,13 @@ func (a *App) CropSectionFromImage(inputImg *image.RGBA, x, y, width, height flo
 	}
 
 	croppedRect := image.Rect(relX, relY, relX+int(width), relY+int(height))
-	croppedImage := inputImg.SubImage(croppedRect)
-	return &croppedImage
+	return inputImg.SubImage(croppedRect)
 }
 
-func (a *App) CaptureSnippet(x, y, width, height float32) (string, error) {
+func (a *Screenshot) CaptureSnippet(x, y, width, height float32) (string, error) {
+	s := NewScreenshot()
 	bounds := NewBoundsOfActiveDisplays()
-	fullImage, err := a.ScreenshotEveryDisplayAndMergeIt(
+	fullImage, err := s.ScreenshotEveryDisplayAndMergeIt(
 		bounds.NumberOfDisplays,
 		bounds.MinX,
 		bounds.MinY,
@@ -132,7 +97,7 @@ func (a *App) CaptureSnippet(x, y, width, height float32) (string, error) {
 		return "", err
 	}
 
-	croppedImg := *a.CropSectionFromImage(fullImage, x, y, width, height, bounds.TotalWidth, bounds.TotalHeight)
+	croppedImg := s.CropSectionFromImage(fullImage, x, y, width, height, bounds.TotalWidth, bounds.TotalHeight)
 	buffer, err := utils.ConvertToPng(croppedImg)
 	if err != nil {
 		return "", err
