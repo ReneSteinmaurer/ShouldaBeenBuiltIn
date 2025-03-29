@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"github.com/wailsapp/wails/v2/pkg/options/windows"
 	"win_tools/src/api"
 
 	"github.com/wailsapp/wails/v2"
@@ -13,23 +14,29 @@ import (
 var assets embed.FS
 
 func main() {
-	// Create an instance of the app structure
 	app := api.NewApp()
 
-	// Create application with options
-	err := wails.Run(&options.App{
+	appOptions := &options.App{
 		Title:  "ShouldaBeenBuiltIn",
 		Width:  1024,
 		Height: 768,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
+		Windows: &windows.Options{
+			WebviewIsTransparent: true,
+			WindowIsTranslucent:  false,
+			BackdropType:         windows.Acrylic,
+		},
+		BackgroundColour: &options.RGBA{R: 0, G: 0, B: 0, A: 0},
 		OnStartup:        app.Startup,
 		Bind: []interface{}{
 			app,
 		},
-	})
+	}
+	app.SetAppOptions(appOptions)
+
+	err := wails.Run(appOptions)
 
 	if err != nil {
 		println("Error:", err.Error())

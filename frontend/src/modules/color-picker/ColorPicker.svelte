@@ -30,7 +30,7 @@
 </script>
 
 <div class="flex flex-col items-center gap-4 p-4 rounded-lg bg-base-200">
-  <button class="btn btn-primary btn-md gap-2" on:click={toggleColorPicker}>
+  <button class="btn btn-primary btn-md gap-2" onclick={toggleColorPicker}>
     <Icon icon_definition="{faEyeDropper}" />
     <span>Pick Color</span>
   </button>
@@ -38,7 +38,7 @@
   <div class="flex items-center gap-3">
     <div class="w-10 h-10 rounded-full border-4 border-base-content/10 shadow-inner"
          style="background-color: {colorCode}"></div>
-    <div on:click={() => copyColorCodeToClipboardAndDisplayToast(colorCode)}
+    <div onclick={() => copyColorCodeToClipboardAndDisplayToast(colorCode)}
          class="badge badge-lg hover:cursor-pointer font-mono bg-base-300 text-base-content">{colorCode}</div>
   </div>
 
@@ -47,7 +47,7 @@
       <h3 class="flex justify-center items-center text-lg font-medium text-base-content/80 mb-3">Color History</h3>
       <div class="grid grid-cols-5 gap-4">
         {#each colorCodeHistory as code}
-          <div on:click={() => copyColorCodeToClipboardAndDisplayToast(code)} class="flex flex-col items-center group">
+          <div onclick={() => copyColorCodeToClipboardAndDisplayToast(code)} class="flex flex-col items-center group">
             <div
               class="w-12 h-12 rounded-xl border-2 border-base-content/10 shadow-md hover:shadow-lg transition-all cursor-pointer group-hover:scale-105"
               style="background-color: {code}"></div>
@@ -59,6 +59,6 @@
   {/if}
 
 
-  <input class="hidden" bind:this={colorInputRef} type="color" value="{colorCode}" on:change={handleColorChange}>
+  <input class="hidden" bind:this={colorInputRef} type="color" value="{colorCode}" onchange={handleColorChange}>
   <Alert bind:this={toastRef}></Alert>
 </div>

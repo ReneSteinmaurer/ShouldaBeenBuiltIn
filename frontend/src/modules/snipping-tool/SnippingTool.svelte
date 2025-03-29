@@ -1,5 +1,10 @@
 <script>
-  import {CaptureArea} from '../../../wailsjs/go/api/App.js';
+  import {
+    CaptureArea,
+    MakeWindowTransparent,
+    MaximizeWindowToBounds, ResetWindowSizeToDefault,
+    UndoMakeWindowTransparent,
+  } from '../../../wailsjs/go/api/App.js';
   import Alert from '../../shared/Alert.svelte';
   import Icon from '../../shared/Icon.svelte';
   import { faImages } from '@fortawesome/free-solid-svg-icons';
@@ -15,7 +20,7 @@
   let loading = $state(false);
   let toastRef
 
-  async function handleScreenshot() {
+  async function handleScreenshotAllScreens() {
     WindowMinimise()
     loading = true;
     const imagesRes = await CaptureArea();
@@ -23,6 +28,15 @@
     loading = false
     images = imagesRes;
     toastRef.showToast('Screenshots were taken', 'success');
+  }
+
+  async function handleScreenshot() {
+    MaximizeWindowToBounds()
+    MakeWindowTransparent()
+    setTimeout(() => {
+      UndoMakeWindowTransparent()
+      ResetWindowSizeToDefault()
+    }, 3000);
   }
 
   function openImageInNewTab(index) {
@@ -44,13 +58,13 @@
 
 <div>
   <div class="flex justify-center items-center">
-    <button on:click={handleScreenshot} class="btn gap-2 btn-primary btn-md">
+    <button onclick={handleScreenshotAllScreens} class="btn gap-2 btn-primary btn-md">
       {#if loading}
         <span class="loading loading-spinner"></span>
         Taking Screenshots...
         {:else}
         <Icon icon_definition={faImages} />
-        Screenshot
+        Screenshot All Screens
       {/if}
     </button>
   </div>
@@ -65,7 +79,7 @@
             <h3 class="card-title text-sm">Bildschirm {i+1}</h3>
             <div class="card-actions">
               <button
-                on:click={() => openImageInNewTab(i)}
+                onclick={() => openImageInNewTab(i)}
                 class="btn btn-soft btn-md btn-primary"
               >
                 Open in new window

@@ -8,8 +8,9 @@
 
 </script>
 
-<a
-  on:click={() => selectedTab = tabIndex}
+<div
+  onclick={() => selectedTab = tabIndex}
+  tabindex={tabIndex}
   role="tab"
   class={`tab ${selectedClass} hover:bg-primary/60 rounded-xl font-medium`}
 >
@@ -17,4 +18,4 @@
           <Icon icon_definition="{icon}"></Icon>
           {tabName}
         </span>
-</a>
+</div>

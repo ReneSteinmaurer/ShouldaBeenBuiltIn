@@ -2,10 +2,15 @@ package api
 
 import (
 	"bytes"
+	"embed"
 	"github.com/kbinani/screenshot"
+	"image"
 	"image/png"
 	"win_tools/src/utils"
 )
+
+//go:embed all:frontend/dist
+var assets embed.FS
 
 func (a *App) CaptureArea() ([]string, error) {
 	n := screenshot.NumActiveDisplays()
@@ -30,4 +35,22 @@ func (a *App) CaptureArea() ([]string, error) {
 	}
 
 	return base64Images, nil
+}
+
+func (a *App) StartScreenshotSelection() {
+	a.createScreenshotSelectionWindow()
+}
+
+func (a *App) createScreenshotSelectionWindow() {
+	n := screenshot.NumActiveDisplays()
+	var virtualBounds image.Rectangle
+
+	if n > 0 {
+		virtualBounds = screenshot.GetDisplayBounds(0)
+	}
+
+	for i := 1; i < n; i++ {
+		displayBounds := screenshot.GetDisplayBounds(i)
+		virtualBounds = virtualBounds.Union(displayBounds)
+	}
 }
