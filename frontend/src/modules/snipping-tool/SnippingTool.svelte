@@ -62,10 +62,14 @@
       }
       const image = await CaptureSnippet(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
       toastRef.showToast(`Snippet was created successfully`, 'success');
-      images.push(image)
+      images.push(image);
     } catch (e) {
-      toastRef.showToast(`unexpected error: ${e.message || "Failed to process screenshot"}`, 'error');
+      toastRef.showToast(`unexpected error: ${e.message || 'Failed to process screenshot'}`, 'error');
     }
+  }
+
+  function deleteImage(i) {
+    images = images.filter(val => val !== images[i]);
   }
 
 </script>
@@ -103,18 +107,24 @@
   {#if images.length > 0}
     <div class="grid mt-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {#each images as image, i}
-        <div class="card bg-base-100 shadow-md">
+        <div class="card hover:transition-transform hover:scale-105 hover:cursor-pointer bg-base-100 shadow-md">
           <figure class="px-4 pt-4">
             <img src={image} alt={`Screenshot ${i+1}`} class="rounded-lg object-cover w-full" />
           </figure>
           <div class="card-body items-center text-center pt-4 pb-4">
-            <h3 class="card-title text-sm">Bildschirm {i + 1}</h3>
+            <h3 class="card-title text-sm">Snippet {i + 1}</h3>
             <div class="card-actions">
               <button
                 onclick={() => openImageInNewTab(i)}
                 class="btn btn-soft btn-md btn-primary"
               >
                 Open in new window
+              </button>
+              <button
+                onclick={() => deleteImage(i)}
+                class="btn btn-soft btn-md btn-error"
+              >
+                Delete
               </button>
             </div>
           </div>
