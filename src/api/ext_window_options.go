@@ -7,6 +7,11 @@ import (
 	"syscall"
 )
 
+type WindowSize struct {
+	Height int
+	Width  int
+}
+
 func (a *App) MakeWindowTransparent() {
 	if a.hwnd == 0 {
 		a.hwnd = win.FindWindow(nil, syscall.StringToUTF16Ptr(a.appOptions.Title))
@@ -66,4 +71,11 @@ func (a *App) ResetWindowSizeToDefault() {
 	runtime.WindowSetSize(a.ctx, a.appOptions.Width, a.appOptions.Height)
 	runtime.WindowCenter(a.ctx)
 	runtime.WindowSetAlwaysOnTop(a.ctx, false)
+}
+
+func (a *App) GetWindowSize() WindowSize {
+	return WindowSize{
+		Height: a.appOptions.Height,
+		Width:  a.appOptions.Width,
+	}
 }

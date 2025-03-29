@@ -1,6 +1,6 @@
 <script>
   import {
-    CaptureArea,
+    CaptureArea, CaptureSnippet,
     MakeWindowTransparent,
     MaximizeWindowToBounds, ResetWindowSizeToDefault,
     UndoMakeWindowTransparent,
@@ -15,28 +15,29 @@
     WindowShow,
     WindowUnminimise,
   } from '../../../wailsjs/runtime/runtime.js';
+  import SnippSelectionCanvas from './SnippSelectionCanvas.svelte';
 
   let images = $state([]);
   let screenshotsLoading = $state(false);
-  let toastRef
+  let showSnippingSelection = $state(false);
+  let selectionHappened = $state(false);
+  let toastRef;
 
   async function handleScreenshotAllScreens() {
-    WindowMinimise()
+    WindowMinimise();
     screenshotsLoading = true;
     const imagesRes = await CaptureArea();
-    WindowUnminimise()
-    screenshotsLoading = false
+    WindowUnminimise();
+    screenshotsLoading = false;
     images = imagesRes;
     toastRef.showToast('Screenshots were taken', 'success');
   }
 
   async function handleSnippingTool() {
-    MaximizeWindowToBounds()
-    MakeWindowTransparent()
-    setTimeout(() => {
-      UndoMakeWindowTransparent()
-      ResetWindowSizeToDefault()
-    }, 3000);
+    selectionHappened = false;
+    showSnippingSelection = true;
+    MaximizeWindowToBounds();
+    MakeWindowTransparent();
   }
 
   function openImageInNewTab(index) {
@@ -54,6 +55,36 @@
 
     window.open(blobUrl);
   }
+
+  function saveSnippingSelection() {
+
+  }
+
+  function cancelSnippingSelection() {
+
+  }
+
+  async function handleSelectionEnd(selectionBox) {
+    try {
+      await UndoMakeWindowTransparent();
+      await ResetWindowSizeToDefault();
+      selectionHappened = true;
+      showSnippingSelection = false;
+
+      if (!selectionBox) {
+        toastRef.showToast(`Selection box could not be retrieved!`, 'error');
+        return;
+      }
+      toastRef.showToast(`Snippet was created successfully`, 'success');
+      console.log('selection box', selectionBox);
+      const image = await CaptureSnippet(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
+      images = []
+      images.push(image)
+    } catch (e) {
+      toastRef.showToast(`unexpected error: ${e.message || "Failed to process screenshot"}`, 'error');
+    }
+  }
+
 </script>
 
 <div>
@@ -62,7 +93,7 @@
       {#if screenshotsLoading}
         <span class="loading loading-spinner"></span>
         Taking Screenshots...
-        {:else}
+      {:else}
         <Icon icon_definition={faImages} />
         Take Screenshot
       {/if}
@@ -75,10 +106,22 @@
 
   <div class="flex justify-center items-center mt-8">
     <button onclick={handleSnippingTool} class="btn gap-2 btn-primary btn-md">
-        <Icon icon_definition={faScissors} />
-        Snipping Tool
+      <Icon icon_definition={faScissors} />
+      Snipping Tool
     </button>
   </div>
+
+  {#if showSnippingSelection}
+    <div class="fixed inset-0 z-50 bg-opacity-100">
+      <SnippSelectionCanvas onSelectionEnd={handleSelectionEnd} />
+    </div>
+  {/if}
+  {#if selectionHappened}
+    <div class="flex justify-center items-center mt-8">
+      <button onclick={saveSnippingSelection} class="btn btn-success mr-2">Auswahl bestätigen</button>
+      <button onclick={cancelSnippingSelection} class="btn btn-error">Abbrechen</button>
+    </div>
+  {/if}
 
   {#if images.length > 0}
     <div class="grid mt-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -88,7 +131,7 @@
             <img src={image} alt={`Screenshot ${i+1}`} class="rounded-lg object-cover w-full" />
           </figure>
           <div class="card-body items-center text-center pt-4 pb-4">
-            <h3 class="card-title text-sm">Bildschirm {i+1}</h3>
+            <h3 class="card-title text-sm">Bildschirm {i + 1}</h3>
             <div class="card-actions">
               <button
                 onclick={() => openImageInNewTab(i)}
