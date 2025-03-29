@@ -3,14 +3,23 @@
   import Alert from '../../shared/Alert.svelte';
   import Icon from '../../shared/Icon.svelte';
   import { faImages } from '@fortawesome/free-solid-svg-icons';
+  import {
+    WindowHide,
+    WindowMaximise,
+    WindowMinimise,
+    WindowShow,
+    WindowUnminimise,
+  } from '../../../wailsjs/runtime/runtime.js';
 
   let images = $state([]);
   let loading = $state(false);
   let toastRef
 
   async function handleScreenshot() {
+    WindowMinimise()
     loading = true;
     const imagesRes = await CaptureArea();
+    WindowUnminimise()
     loading = false
     images = imagesRes;
     toastRef.showToast('Screenshots were taken', 'success');
