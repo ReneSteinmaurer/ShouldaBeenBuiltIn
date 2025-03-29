@@ -1,10 +1,12 @@
 package api
 
 import (
+	"context"
 	"github.com/kbinani/screenshot"
 )
 
 type SysInfo struct {
+	ctx               context.Context
 	WindowCoordinates *WindowCoordinates
 }
 
@@ -21,8 +23,9 @@ func NewWindowCoordinates() *WindowCoordinates {
 	return w
 }
 
-func NewSysInfo() *SysInfo {
+func NewSysInfo(ctx context.Context) *SysInfo {
 	s := &SysInfo{
+		ctx:               ctx,
 		WindowCoordinates: NewWindowCoordinates(),
 	}
 	return s

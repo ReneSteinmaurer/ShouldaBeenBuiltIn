@@ -2,9 +2,11 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"fmt"
 	"github.com/kbinani/screenshot"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"image"
 	"image/draw"
 	"image/png"
@@ -15,13 +17,16 @@ import (
 var assets embed.FS
 
 type Screenshot struct {
+	ctx context.Context
 }
 
-func NewScreenshot() *Screenshot {
-	return &Screenshot{}
+func NewScreenshot(ctx context.Context) *Screenshot {
+	return &Screenshot{
+		ctx: ctx,
+	}
 }
 
-func (a *Screenshot) CaptureArea() ([]string, error) {
+func (s *Screenshot) CaptureArea() ([]string, error) {
 	n := screenshot.NumActiveDisplays()
 	var base64Images []string
 
@@ -46,7 +51,7 @@ func (a *Screenshot) CaptureArea() ([]string, error) {
 	return base64Images, nil
 }
 
-func (a *Screenshot) ScreenshotEveryDisplayAndMergeIt(numberOfDisplays, minX, minY, totalWidth, totalHeight int) (*image.RGBA, error) {
+func (s *Screenshot) ScreenshotEveryDisplayAndMergeIt(numberOfDisplays, minX, minY, totalWidth, totalHeight int) (*image.RGBA, error) {
 	var fullImage *image.RGBA
 	fullImage = image.NewRGBA(image.Rect(0, 0, totalWidth, totalHeight))
 	for i := 0; i < numberOfDisplays; i++ {
@@ -63,7 +68,7 @@ func (a *Screenshot) ScreenshotEveryDisplayAndMergeIt(numberOfDisplays, minX, mi
 	return fullImage, nil
 }
 
-func (a *Screenshot) CropSectionFromImage(inputImg *image.RGBA, x, y, width, height float32, totalWidth, totalHeight int) image.Image {
+func (s *Screenshot) CropSectionFromImage(inputImg *image.RGBA, x, y, width, height float32, totalWidth, totalHeight int) image.Image {
 	relX := int(x)
 	relY := int(y)
 
@@ -84,8 +89,8 @@ func (a *Screenshot) CropSectionFromImage(inputImg *image.RGBA, x, y, width, hei
 	return inputImg.SubImage(croppedRect)
 }
 
-func (a *Screenshot) CaptureSnippet(x, y, width, height float32) (string, error) {
-	s := NewScreenshot()
+func (s *Screenshot) CaptureSnippet(x, y, width, height float32) (string, error) {
+	runtime.WindowMinimise(s.ctx)
 	bounds := NewBoundsOfActiveDisplays()
 	fullImage, err := s.ScreenshotEveryDisplayAndMergeIt(
 		bounds.NumberOfDisplays,
@@ -102,5 +107,6 @@ func (a *Screenshot) CaptureSnippet(x, y, width, height float32) (string, error)
 	if err != nil {
 		return "", err
 	}
+	runtime.WindowUnminimise(s.ctx)
 	return utils.EncodeToBase64Image(buffer.Bytes()), nil
 }

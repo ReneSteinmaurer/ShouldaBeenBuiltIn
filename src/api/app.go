@@ -19,14 +19,13 @@ type App struct {
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	return &App{
-		screenshot: NewScreenshot(),
-		sysInfo:    NewSysInfo(),
-	}
+	return &App{}
 }
 
 func (a *App) Startup(ctx context.Context) {
 	a.ctx = ctx
+	a.screenshot = NewScreenshot(ctx)
+	a.sysInfo = NewSysInfo(ctx)
 	go func() {
 		time.Sleep(100 * time.Millisecond)
 		a.hwnd = win.FindWindow(nil, syscall.StringToUTF16Ptr("ShouldaBeenBuiltIn"))
